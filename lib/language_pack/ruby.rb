@@ -246,6 +246,25 @@ private
       set_env_override "GEM_PATH", "$HOME/#{slug_vendor_base}:$GEM_PATH"
       set_env_override "PATH",     binstubs_relative_paths.map {|path| "$HOME/#{path}" }.join(":") + ":$PATH"
 
+      add_to_profiled <<-DEFAULT_WEB_CONCURRENCY
+        case $(ulimit -u) in
+        256)
+          export HEROKU_RAM_LIMIT_MB=${HEROKU_RAM_LIMIT_MB:-512}
+          export WEB_CONCURRENCY=${WEB_CONCURRENCY:-2}
+          ;;
+        512)
+          export HEROKU_RAM_LIMIT_MB=${HEROKU_RAM_LIMIT_MB:-1024}
+          export WEB_CONCURRENCY=${WEB_CONCURRENCY:-4}
+          ;;
+        32768)
+          export HEROKU_RAM_LIMIT_MB=${HEROKU_RAM_LIMIT_MB:-8192}
+          export WEB_CONCURRENCY=${WEB_CONCURRENCY:-16}
+          ;;
+        *)
+          ;;
+        esac
+      DEFAULT_WEB_CONCURRENCY
+
       if ruby_version.jruby?
         set_env_default "JAVA_OPTS",  default_java_opts
         set_env_default "JRUBY_OPTS", default_jruby_opts
