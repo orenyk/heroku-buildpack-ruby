@@ -854,8 +854,9 @@ params = CGI.parse(uri.query || "")
   #
   # copy secrets.yml file from example
   def copy_secrets
+    return if File.exists?('config/secrets.yml')
     puts 'Copying secrets.yml from example...'
-    run('cp config/secrets.yml.example config/secrets.yml')
+    run('cp -n config/secrets.yml.example config/secrets.yml')
   end
 
   def run_assets_precompile_rake_task
