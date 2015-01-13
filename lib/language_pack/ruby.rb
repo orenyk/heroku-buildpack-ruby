@@ -854,6 +854,7 @@ params = CGI.parse(uri.query || "")
   #
   # copy secrets.yml file from example
   def copy_secrets
+    puts 'Copying secrets.yml from example...'
     run('cp config/secrets.yml.example config/secrets.yml')
   end
 
