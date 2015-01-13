@@ -103,6 +103,7 @@ WARNING
         create_database_yml
         install_binaries
         copy_secrets
+        copy_party_foul
         run_assets_precompile_rake_task
       end
       best_practice_warnings
@@ -792,6 +793,13 @@ params = CGI.parse(uri.query || "")
     return if File.exists?('config/secrets.yml')
     puts 'Copying secrets.yml from example...'
     run('cp -n config/secrets.yml.example config/secrets.yml')
+  end
+
+  # copy party_foul initializer
+  def copy_party_foul
+    return if File.exists?('config/initializers/party_foul.rb')
+    puts 'Copying Party Foul initializer...'
+    run('cp -n config/initializers/party_foul.rb.example config/initializers/party_foul.rb')
   end
 
   def run_assets_precompile_rake_task
