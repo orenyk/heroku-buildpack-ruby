@@ -106,6 +106,7 @@ WARNING
         post_bundler
         create_database_yml
         install_binaries
+        copy_secrets
         run_assets_precompile_rake_task
       end
       best_practice_warnings
@@ -849,6 +850,11 @@ params = CGI.parse(uri.query || "")
 
   def yarn_not_preinstalled?
     !yarn_preinstall_bin_path
+  end
+  #
+  # copy secrets.yml file from example
+  def copy_secrets
+    run('cp config/secrets.yml.example config/secrets.yml')
   end
 
   def run_assets_precompile_rake_task
