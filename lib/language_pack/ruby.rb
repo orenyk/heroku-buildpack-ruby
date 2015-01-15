@@ -108,6 +108,7 @@ WARNING
         install_binaries
         copy_secrets
         copy_party_foul
+        copy_timeout
         run_assets_precompile_rake_task
       end
       best_practice_warnings
@@ -865,6 +866,13 @@ params = CGI.parse(uri.query || "")
     return if File.exists?('config/initializers/party_foul.rb')
     puts 'Copying Party Foul initializer...'
     run('cp -n config/initializers/party_foul.rb.example config/initializers/party_foul.rb')
+  end
+
+  # copy rack timeout intializer
+  def copy_timeout
+    return if File.exists?('config/initializers/timeout.rb')
+    puts 'Copying Rack::Timeout intializer...'
+    run('cp -n config/initializers/timeout.rb.example config/initializers/timeout.rb')
   end
 
   def run_assets_precompile_rake_task
