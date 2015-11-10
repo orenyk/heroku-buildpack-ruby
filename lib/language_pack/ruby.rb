@@ -30,7 +30,10 @@ class LanguagePack::Ruby < LanguagePack::Base
   end
 
   def self.bundler
-    @@bundler ||= LanguagePack::Helpers::BundlerWrapper.new.install
+    @@bundler ||= LanguagePack::Helpers::BundlerWrapper.new(
+      fetcher: LanguagePack::Fetcher.new(
+        "https://codeload.github.com/bundler/bundler"),
+      bundler_tar: "tar.gz/v#{BUNDLER_VERSION}").install
   end
 
   def bundler
@@ -549,7 +552,7 @@ WARNING
       log("bundle") do
         bundle_without = env("BUNDLE_WITHOUT") || default_bundle_without
         bundle_bin     = "bundle"
-        bundle_command = "#{bundle_bin} install --without #{bundle_without} --path vendor/bundle --binstubs #{bundler_binstubs_path}"
+        bundle_command = "#{bundle_bin} install --without #{bundle_without} --with heroku --path vendor/bundle --binstubs #{bundler_binstubs_path}"
         bundle_command << " -j4"
 
         if File.exist?("#{Dir.pwd}/.bundle/config")
