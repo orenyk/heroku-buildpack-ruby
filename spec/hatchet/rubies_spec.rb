@@ -44,14 +44,14 @@ describe "Ruby Versions on cedar-14" do
   end
 
   it "should deploy jdk 8 on cedar-14 by default" do
-    app = Hatchet::Runner.new("ruby_193_jruby_17161", stack: "cedar-14")
+    app = Hatchet::Runner.new("ruby_193_jruby_1_7_27", stack: "heroku-18")
     app.setup!
     app.deploy do |app|
       expect(app.output).to match("Installing JVM: openjdk-8")
       expect(app.output).to match("JRUBY_OPTS is:  -Xcompile.invokedynamic=false")
       expect(app.output).not_to include("OpenJDK 64-Bit Server VM warning")
 
-      `git commit -am "redeploy" --allow-empty`
+      run!('git commit -am "redeploy" --allow-empty')
       app.set_config("JRUBY_BUILD_OPTS" => "--dev")
       app.push!
       expect(app.output).to match("JRUBY_OPTS is:  --dev")
@@ -66,6 +66,33 @@ describe "Ruby Versions on cedar-14" do
     app.deploy do |app|
       expect(app.output).to match("Installing JVM: openjdk-7")
       expect(app.output).not_to include("OpenJDK 64-Bit Server VM warning")
+    end
+  end
+
+  it "should deploy jruby with the naether gem" do
+    app = Hatchet::Runner.new("jruby_naether", stack: DEFAULT_STACK)
+    app.setup!
+    app.deploy do |app|
+      expect(app.output).to match("Installing naether")
+      expect(app.output).not_to include("An error occurred while installing naether")
+    end
+  end
+end
+
+
+describe "Upgrading ruby apps" do
+  it "works when changing from default version" do
+    app = Hatchet::Runner.new("default_ruby", stack: DEFAULT_STACK)
+    app.setup!
+    app.deploy do |app|
+      expect(app.run("env | grep MALLOC_ARENA_MAX")).to match("MALLOC_ARENA_MAX=2")
+
+      run!(%Q{echo "ruby '2.5.1'" >> Gemfile})
+      run!("git add -A; git commit -m update-ruby")
+      app.push!
+      expect(app.output).to match("2.5.1")
+      expect(app.run("ruby -v")).to match("2.5.1")
+      expect(app.output).to match("Ruby version change detected")
     end
   end
 end
